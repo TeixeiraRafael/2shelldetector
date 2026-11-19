@@ -219,14 +219,27 @@
       }));
   }
 
-  async function lookupCVE(id) {
-    const data = await getJSON(`https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=${encodeURIComponent(id)}`, 25000); // NVD is often slow (10s+)
+  async function lookupCVE(id, attempt = 0) {
+    let data;
+    try {
+      data = await getJSON(`https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=${encodeURIComponent(id)}`, 25000); // NVD is often slow (10s+)
+    } catch (err) {
+      // NVD rate-limits bursts (about 5 requests per 30s) and its refusal has no CORS header,
+      // so it shows up as a network error. Wait a bit and try once more.
+      if (attempt >= 1) throw err;
+      await new Promise((resolve) => setTimeout(resolve, 7000));
+      return lookupCVE(id, attempt + 1);
+    }
     const cve = data.vulnerabilities && data.vulnerabilities[0] && data.vulnerabilities[0].cve;
     if (!cve) return null;
     const m = cve.metrics || {};
     const metric = (m.cvssMetricV40 || m.cvssMetricV31 || m.cvssMetricV30 || m.cvssMetricV2 || [])[0];
     const d = metric && metric.cvssData;
-    return { score: d && d.baseScore, severity: (d && d.baseSeverity) || (metric && metric.baseSeverity) };
+    return {
+      score: d && d.baseScore,
+      severity: (d && d.baseSeverity) || (metric && metric.baseSeverity),
+      rejected: cve.vulnStatus === 'Rejected',
+    };
   }
 
   function extractCVEs(items) {
@@ -454,11 +467,13 @@
             if (info && info.score != null) {
               score.textContent = `${info.score} ${info.severity || ''}`.trim();
               score.dataset.sev = String(info.severity || '').toLowerCase();
+            } else if (info && info.rejected) {
+              score.textContent = 'rejected (duplicate?)';
             } else {
               score.textContent = 'not scored yet';
             }
           })
-          .catch(() => { if (run === currentRun) score.remove(); });
+          .catch(() => { if (run === currentRun) score.textContent = 'NVD busy, click for details'; });
       }
     }
 
