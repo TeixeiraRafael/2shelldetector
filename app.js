@@ -220,7 +220,7 @@
   }
 
   async function lookupCVE(id) {
-    const data = await getJSON(`https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=${encodeURIComponent(id)}`, 10000);
+    const data = await getJSON(`https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=${encodeURIComponent(id)}`, 25000); // NVD is often slow (10s+)
     const cve = data.vulnerabilities && data.vulnerabilities[0] && data.vulnerabilities[0].cve;
     if (!cve) return null;
     const m = cve.metrics || {};
