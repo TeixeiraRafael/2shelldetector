@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>2shelldetector</title>
+  <meta name="description" content="Is there a <thing>2shell CVE yet? Find out before your CISO does.">
+  <meta property="og:title" content="2shelldetector">
+  <meta property="og:description" content="Is there a <thing>2shell CVE yet? Find out before your CISO does.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐚</text></svg>">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main id="app" class="is-home">
+    <header class="hero">
+      <a class="logo" href="./" aria-label="2shelldetector, back to home">
+        <span class="logo-word"><span class="logo-term" id="logoTerm">php</span><span class="logo-2shell">2shell</span></span><span class="logo-detector">detector</span>
+      </a>
+      <p class="tagline">Is there a <span class="tag-thing">&lt;thing&gt;</span>2shell yet? Find out before your CISO does.</p>
+    </header>
+
+    <form id="searchForm" class="search" role="search" autocomplete="off">
+      <span class="search-prefix" aria-hidden="true">$</span>
+      <input id="q" name="q" type="search" maxlength="40" placeholder="php, react, toaster..." aria-label="Thing to check for a 2shell CVE" spellcheck="false" required>
+      <span class="search-suffix" aria-hidden="true">2shell</span>
+      <button type="submit" class="search-btn">Detect</button>
+    </form>
+
+    <p class="try" id="try">
+      Try:
+      <button type="button" data-q="php">php</button>
+      <button type="button" data-q="react">react</button>
+      <button type="button" data-q="log">log</button>
+      <button type="button" data-q="toaster">toaster</button>
+      <button type="button" data-q="excel">excel</button>
+    </p>
+
+    <section id="status" class="status" aria-live="polite"></section>
+    <section id="verdict" class="verdict" aria-live="polite" hidden></section>
+    <nav id="tabs" class="tabs" aria-label="Filter results" hidden></nav>
+    <ol id="results" class="results"></ol>
+  </main>
+
+  <footer class="footer">
+    <p>2shelldetector is a joke. It is not a vulnerability scanner, a threat feed, or legal advice.</p>
+    <p>Live results from Hacker News (via Algolia), GitHub, Wikipedia and the NVD.</p>
+  </footer>
+
+  <script src="messages.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
